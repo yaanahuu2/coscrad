@@ -2,7 +2,9 @@
     "editor.formatOnSave": true,
     "editor.minimap.enabled": false,
     "prettier.requireConfig": true,
-    "editor.rulers": [80],
+    "editor.rulers": [
+        80
+    ],
     "editor.codeActionsOnSave": {
         "source.fixAll": "never",
         "source.organizeImports": "explicit"
@@ -13,6 +15,7 @@
     "typescript.preferences.quoteStyle": "single",
     "typescript.updateImportsOnFileMove.enabled": "always",
     "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
     "typescript.tsdk": "node_modules/typescript/lib",
-    "js/ts.tsdk.path": "node_modules/typescript/lib"
+    "js/ts.tsdk.path": "node_modules/typescript/lib",
 }

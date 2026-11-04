@@ -11,9 +11,9 @@ import formatAggregateCompositeIdentifier from '../queries/presentation/formatAg
 import formatAggregateType from '../queries/presentation/formatAggregateType';
 import assertTestInstancesOfTypeAreComprehensive from '../test-data/__tests__/assertTestInstancesOfTypeAreComprehensive';
 import { DynamicDataTypeFinderService, DynamicDataTypeModule } from '../validation';
+import assertEdgeConnectionContextStateIsValid from './__tests__/assertEdgeConnectionContextStateIsValid';
 import buildTestData from './buildTestData';
 import convertInMemorySnapshotToDatabaseFormat from './utilities/convertInMemorySnapshotToDatabaseFormat';
-import assertEdgeConnectionContextStateIsValid from './__tests__/assertEdgeConnectionContextStateIsValid';
 
 /**
  * We are temporarily disabling this as we look for a more extensible way
@@ -30,7 +30,19 @@ import assertEdgeConnectionContextStateIsValid from './__tests__/assertEdgeConne
  *  }
  * })
  */
-describe.skip('buildTestData', () => {
+
+const excludedAggregateTypes = ['note', 'tag', 'category'] as const;
+
+type ExcludedType = typeof excludedAggregateTypes[number];
+
+export type FilteredAggregateType = Exclude<AggregateType, ExcludedType>;
+
+export const filteredAggregateTypes = (Object.values(AggregateType) as AggregateType[]).filter(
+    (type): type is FilteredAggregateType => !excludedAggregateTypes.includes(type as any)
+);
+
+
+describe('buildTestData', () => {
     beforeAll(async () => {
         const testModule = await Test.createTestingModule({
             imports: [DynamicDataTypeModule],
@@ -56,7 +68,10 @@ describe.skip('buildTestData', () => {
         });
     });
 
-    Object.values(AggregateType).forEach((aggregateType) => {
+    filteredAggregateTypes.forEach((aggregateType) => {
+        console.log('going to test: ', aggregateType);
+        
+        
         describe(`The test instances for ${formatAggregateType(aggregateType)}`, () => {
             it('should be comprehensive', () => {
                 assertTestInstancesOfTypeAreComprehensive(aggregateType, testData);

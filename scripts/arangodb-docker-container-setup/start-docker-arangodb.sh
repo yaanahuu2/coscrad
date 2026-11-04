@@ -14,6 +14,24 @@ else
   exit;
 fi
 
+echo $'\n Is your platform Linux arm64?'
+
+read -p "y/N: " CONFIRM
+
+if [[ "${CONFIRM,,}" == "y" || "${CONFIRM,,}" == "yes" ]]; 
+then
+  echo $'\n Configuring Docker for arm64 architecture'
+  
+  PLATFORM_FLAG="--platform linux/arm64/v8 "
+
+  echo $'\n PLATFORM_FLAG: '$PLATFORM_FLAG
+else
+  echo $'\n Configuring Docker for Linux'
+
+  PLATFORM_FLAG=""
+
+fi
+
 echo $'\n';
 printenv | grep "COSCRAD_ENVIRONMENT";
 
@@ -172,8 +190,8 @@ then
   if [ -z "${DOCKER_PS##*$ARANGO_DB_SERVER*}" ];
   then
     echo "stop & remove old instance of docker arango $ARANGO_DB_SERVER container";
-    # (sudo -u root docker container stop $ARANGO_DB_SERVER || :) && \
-    #   sudo -u root docker container rm $ARANGO_DB_SERVER
+    (sudo -u root docker container stop $ARANGO_DB_SERVER || :) && \
+      sudo -u root docker container rm $ARANGO_DB_SERVER
   else
     echo "Unknown arango container already running on port $ARANGO_DB_HOST_PORT";
     echo "";
@@ -192,7 +210,8 @@ echo "Starting new fresh instance of [$ARANGO_DB_SERVER]"
 
 sudo -u root docker run \
 --name $ARANGO_DB_SERVER \
--p $ARANGO_DB_HOST_PORT:8529 \
+--restart unless-stopped \
+-p $ARANGO_DB_HOST_PORT:8529 $PLATFORM_FLAG\
 -e ARANGO_DB_HOST_PORT=$ARANGO_DB_HOST_PORT \
 -e ARANGO_ROOT_PASSWORD=$ARANGO_DB_ROOT_PASSWORD \
 -e ARANGO_DB_USER=$ARANGO_DB_USER \
